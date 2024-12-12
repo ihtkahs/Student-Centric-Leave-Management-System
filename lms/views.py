@@ -1,6 +1,4 @@
 from django.shortcuts import render, redirect
-from .forms import LeaveRequestForm
-from .models import LeaveRequest, Student, Staff
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -15,12 +13,14 @@ def custom_login(request):
             login(request, user)
             
             # Check if the user is a staff or student
-            if hasattr(user, 'staff'):  # If it's a staff member
-                # Redirect to the counsellor dashboard or any staff-specific dashboard
+            if hasattr(user, 'counsellor'):  # If the user is linked to a counsellor record
                 return redirect('counsellor_dashboard')
-            else:  # It must be a student
-                # Redirect to the student dashboard
+            elif hasattr(user, 'hod'):  # If the user is linked to an HOD record
+                return redirect('hod_dashboard')
+            elif hasattr(user, 'student'):  # If the user is linked to a student record
                 return redirect('student_dashboard')
+            else:
+                return HttpResponse("Unauthorized access or role not assigned")
         else:
             return HttpResponse("Invalid credentials")
     else:

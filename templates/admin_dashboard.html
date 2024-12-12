@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
-    <link rel="stylesheet" href="{% static 'css/student_dashboard.css' %}">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
 </head>
 <body>    
     <div id="wrapper">
@@ -13,8 +13,7 @@
         <nav id="sidebar">
             <ul>
                 <li><a href="#">Dashboard</a></li>
-                <li><a href="#">Apply Leave</a></li>
-                <li><a href="#">Leave History</a></li>
+                <li><a href="#">Schedule Event</a></li>
                 <li><a href="{% url 'logout' %}">Logout</a></li>
             </ul>
         </nav>
@@ -23,15 +22,15 @@
         <div id="content">
             <header>
                 <button id="sidebarToggle">&#9776;</button>
-                <h1>Student Dashboard</h1>
+                <h1>Admin Dashboard</h1>
             </header>
             <main>
-                <p>Welcome to the Student Dashboard!</p>
+                <p>Welcome to the Admin Dashboard!</p>
             </main>
         </div>
     </div>
 
-    <script src="{% static 'js/student_dashboard.js' %}"></script>
+    <script src="{% static 'js/admin_dashboard.js' %}"></script>
 
 </body>
 </html>

@@ -1,13 +1,36 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Counsellor Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/counsellor_dashboard.css' %}">
 </head>
-<body>
-    <h1>Welcome to the Counsellor Dashboard</h1>
-    <!-- Add counsellor-specific content here -->
-    <a href="{% url 'logout' %}">Logout</a>
+<body>    
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <ul>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Approve Leave</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div id="content">
+            <header>
+                <button id="sidebarToggle">&#9776;</button>
+                <h1>Counsellor Dashboard</h1>
+            </header>
+            <main>
+                <p>Welcome to the Counsellor Dashboard!</p>
+            </main>
+        </div>
+    </div>
+
+    <script src="{% static 'js/counsellor_dashboard.js' %}"></script>
+
 </body>
 </html>
