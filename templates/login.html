@@ -7,11 +7,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
 </head>
 <body>
     <div class="login-container">
-        <h2>Login to LMS</h2>
+        <h2 style="text-align:center;">Login to LMS</h2>
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
