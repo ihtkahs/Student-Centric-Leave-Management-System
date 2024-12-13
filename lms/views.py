@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
+from .forms import LeaveApplicationForm
 
 # Custom login view
 def custom_login(request):
@@ -42,6 +43,21 @@ def counsellor_dashboard(request):
 def hod_dashboard(request):
     # You can pass any context you need here
     return render(request, 'hod_dashboard.html')
+
+@login_required
+def apply_leave(request):
+    if request.method == "POST":
+        form = LeaveApplicationForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Process the data
+            leave_data = form.cleaned_data
+            # Save data to the database if needed
+            print(leave_data)
+            return render(request, "leave_success.html")
+    else:
+        form = LeaveApplicationForm()
+
+    return render(request, "apply_leave.html", {"form": form})
 
 def logout_view(request):
     logout(request)  # This will log out the user

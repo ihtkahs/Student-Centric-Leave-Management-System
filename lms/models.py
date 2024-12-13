@@ -40,16 +40,3 @@ class HOD(models.Model):
 
     def __str__(self):
         return self.name
-
-class LeaveRequest(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    leave_type = models.CharField(max_length=20, choices=[('Casual', 'Casual'), ('Medical', 'Medical'), ('Privilege', 'Privilege')])
-    start_date = models.DateField()
-    end_date = models.DateField()
-    reason = models.TextField()
-    proof = models.FileField(upload_to='proofs/', blank=True, null=True)
-    status = models.CharField(max_length=20, default='Pending')
-    remarks = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"LeaveRequest: {self.student.name} ({self.leave_type})"
