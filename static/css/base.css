@@ -173,3 +173,26 @@ form button:hover {
     border-radius: 5px;
 }
 
+.profile-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+}
+
+.profile-container img {
+    float: right;
+    width: 200px;
+    height: 225px;
+    border-radius: 5%;
+}
+
+.profile-container p {
+    margin: 5px 0;
+    line-height: 1.6;
+}
+.profile-label {
+    font-weight: bold;
+}

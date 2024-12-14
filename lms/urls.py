@@ -8,4 +8,5 @@ urlpatterns = [
     path('counsellor/dashboard/', views.counsellor_dashboard, name='counsellor_dashboard'),
     path('hod/dashboard/', views.hod_dashboard, name='hod_dashboard'),
     path('apply/leave/', views.apply_leave, name='apply_leave'),
+    path('my/profile/', views.my_profile, name='my_profile'),
 ]

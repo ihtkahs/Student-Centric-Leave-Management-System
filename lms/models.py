@@ -40,3 +40,25 @@ class HOD(models.Model):
 
     def __str__(self):
         return self.name
+
+class LeaveRequest(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    counsellor = models.ForeignKey(Counsellor, on_delete=models.SET_NULL, null=True, blank=True)
+    leave_type = models.CharField(max_length=20)
+    duration = models.CharField(max_length=10)
+    date = models.DateField(null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    reason = models.TextField()
+    proof = models.FileField(upload_to='proofs/', blank=True, null=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.student.name} - {self.leave_type} - {self.status}"

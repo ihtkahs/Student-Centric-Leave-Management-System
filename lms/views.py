@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import LeaveApplicationForm
+from .models import Student, LeaveRequest
 
 # Custom login view
 def custom_login(request):
@@ -43,6 +44,13 @@ def counsellor_dashboard(request):
 def hod_dashboard(request):
     # You can pass any context you need here
     return render(request, 'hod_dashboard.html')
+
+@login_required
+def my_profile(request):
+    # Fetch the logged-in student's profile
+    student = Student.objects.get(user=request.user)  # Assuming user is logged in
+    context = {'student': student}
+    return render(request, 'my_profile.html', context)
 
 @login_required
 def apply_leave(request):

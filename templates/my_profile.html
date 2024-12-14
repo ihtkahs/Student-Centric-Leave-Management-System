@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+<body>    
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <ul>
+                <li><a href="{% url 'student_dashboard' %}">Dashboard</a></li>
+                <li><a href="{% url 'apply_leave' %}">Apply Leave</a></li>
+                <li><a href="#">Leave History</a></li>
+                <li><a href="{% url 'my_profile' %}">My Profile</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div id="content">
+            <header>
+                <button id="sidebarToggle">&#9776;</button>
+                <h1>Profile</h1>
+            </header>
+        </div>
+    </div>
+    <main>
+        <div class="profile-container">
+            {% if student.photo %}
+                <div class="profile-image"><img src="{{ student.photo.url }}" alt="Student Photo"></div>
+            {% else %}
+                <div class="profile-image"><img src="{{ MEDIA_URL }}default.jpg" alt="Default Photo"></div>
+            {% endif %}
+            <p><span class="profile-label">Name:</span> {{ student.name }}</p>
+            <p><span class="profile-label">Registration No.:</span> {{ student.reg_no }}</p>
+            <p><span class="profile-label">Date of Birth:</span> {{ student.dob|date:"M. d, Y" }}</p>
+            <p><span class="profile-label">Year:</span> {{ student.year }}</p>
+            <p><span class="profile-label">Department:</span> {{ student.department }}</p>
+            <p><span class="profile-label">Section:</span> {{ student.section }}</p>
+            <p><span class="profile-label">Email:</span> {{ student.email }}</p>
+            <p><span class="profile-label">Mobile No.:</span> {{ student.mobile_no }}</p>
+        </div>
+    </main>
+
+    <script src="{% static 'js/base.js' %}"></script>
+
+</body>
+</html>
