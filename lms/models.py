@@ -14,6 +14,7 @@ class Student(models.Model):
     leave_taken = models.IntegerField(default=0)
     balance_leave = models.IntegerField(default=6)
     photo = models.ImageField(upload_to='photos/', blank=True, null=True)
+    counsellor = models.ForeignKey("Counsellor", on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -40,7 +41,6 @@ class HOD(models.Model):
 
     def __str__(self):
         return self.name
-
 class LeaveRequest(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
