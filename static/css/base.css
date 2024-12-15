@@ -126,6 +126,49 @@ form button:hover {
     background-color: #0056b3;
 }
 
+table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    border-radius: 10px;
+    min-width: 90%;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: left;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    text-align: center;
+}
+
+tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+}
+
+tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+
+td a:hover {
+    text-decoration: underline;
+}
+
 /* Buttons */
 .button {
     padding: 10px 20px;
@@ -142,6 +185,20 @@ form button:hover {
 
 .button:hover {
     background-color: #0056b3;
+}
+
+.action-button {
+    color: white;
+    background-color: #383737;
+    cursor: pointer;
+    padding: 6px 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+}
+
+.action-button:hover {
+    background-color: #575757;
 }
 
 /* Utility Classes */
@@ -195,4 +252,39 @@ form button:hover {
 }
 .profile-label {
     font-weight: bold;
+}
+
+.table-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    max-width: 90%;
+    margin: auto;
+    overflow-x: auto;  /* Enables horizontal scrolling */
+    -webkit-overflow-scrolling: touch;  /* Smooth scrolling for mobile */
+}
+
+.tooltip {
+    position: relative;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    form textarea {
+        width: 100%;
+    }
+
+    form button {
+        width: 100%;
+    }
 }

@@ -41,13 +41,8 @@ class HOD(models.Model):
 
     def __str__(self):
         return self.name
+    
 class LeaveRequest(models.Model):
-    STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('approved', 'Approved'),
-        ('rejected', 'Rejected'),
-    ]
-
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     counsellor = models.ForeignKey(Counsellor, on_delete=models.SET_NULL, null=True, blank=True)
     leave_type = models.CharField(max_length=20)
@@ -57,8 +52,27 @@ class LeaveRequest(models.Model):
     end_date = models.DateField(null=True, blank=True)
     reason = models.TextField()
     proof = models.FileField(upload_to='proofs/', blank=True, null=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.student.name} - {self.leave_type} - {self.status}"
+        return f"{self.student.name} - {self.leave_type}"
+
+class LeaveStatus(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved_by_counsellor', 'Approved by Counsellor'),
+        ('rejected_by_counsellor', 'Rejected by Counsellor'),
+        ('approved_by_hod', 'Approved by HOD'),
+        ('rejected_by_hod', 'Rejected by HOD'),
+        ('final_approved', 'Final Approved'),
+        ('final_rejected', 'Final Rejected'),
+    ]
+
+    leave_request = models.ForeignKey(LeaveRequest, related_name="status_history", on_delete=models.CASCADE)
+    status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='pending')
+    counsellor_comment = models.TextField(null=True, blank=True)
+    hod_comment = models.TextField(null=True, blank=True)
+    changed_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Leave Request {self.leave_request.id} - Status: {self.get_status_display()}"

@@ -9,4 +9,5 @@ urlpatterns = [
     path('hod/dashboard/', views.hod_dashboard, name='hod_dashboard'),
     path('apply/leave/', views.apply_leave, name='apply_leave'),
     path('my/profile/', views.my_profile, name='my_profile'),
+    path('counsellor/approve/leave', views.counsellor_approve_leave, name='counsellor_approve_leave'),
 ]

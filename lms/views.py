@@ -1,12 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import LeaveApplicationForm
-from .models import Student, LeaveRequest, Counsellor
+from .models import Student, LeaveRequest, Counsellor, LeaveStatus
 from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib import messages
 
 # Custom login view
 def custom_login(request):
@@ -65,7 +66,7 @@ def apply_leave(request):
             counsellor = student.counsellor
 
             # Save the leave request data
-            LeaveRequest.objects.create(
+            leave_request = LeaveRequest.objects.create(
                 student=student,
                 counsellor=counsellor,
                 leave_type=form.cleaned_data["leave_type"],
@@ -75,6 +76,12 @@ def apply_leave(request):
                 end_date=form.cleaned_data["end_date"],
                 reason=form.cleaned_data["reason"],
                 proof=form.cleaned_data["proof"],
+            )
+
+            # Save the initial leave status
+            LeaveStatus.objects.create(
+                leave_request=leave_request,
+                status='pending',
             )
 
             # Send a success email
@@ -100,6 +107,51 @@ def apply_leave(request):
         form = LeaveApplicationForm()
 
     return render(request, "apply_leave.html", {"form": form})
+
+@login_required
+def counsellor_approve_leave(request):
+    if not hasattr(request.user, 'counsellor'):  # Ensure the user is a counsellor
+        return redirect('home')  # Redirect to the home page if not a counsellor
+
+    # Filter leave requests for the students assigned to this counsellor
+    counsellor = request.user.counsellor
+    leave_requests = LeaveRequest.objects.filter(
+        status_history__status='pending',  # Use the reverse relation to filter by LeaveStatus
+        student__counsellor=counsellor               # Ensure the leave request belongs to this counsellor's student
+    ).select_related('student').distinct()
+
+    if request.method == 'POST':
+        leave_id = request.POST.get('leave_id')
+        action = request.POST.get('action')
+        comments = request.POST.get('comments', '')
+
+        leave_request = get_object_or_404(LeaveRequest, id=leave_id)
+        leave_status = leave_request.status_history.last()  # Get the latest status record
+
+        # Ensure the counsellor is handling their student's leave request
+        if leave_request.student.counsellor != counsellor:
+            messages.error(request, "Unauthorized action!")
+            return redirect('counsellor_dashboard')
+
+        # Update leave status based on action
+        if action == 'approve':
+            leave_status.status = 'approved_by_counsellor'
+            leave_status.counsellor_comment = comments
+            leave_status.save()
+
+            # Notify HOD only if counsellor approves
+            messages.success(request, "Leave request forwarded to HOD.")
+        elif action == 'reject':
+            leave_status.status = 'rejected_by_counsellor'
+            leave_status.counsellor_comment = comments
+            leave_status.save()
+
+            # Update leave request status as rejected
+            messages.success(request, "Leave request rejected.")
+
+        return redirect('counsellor_dashboard')
+
+    return render(request, 'counsellor_approve_leave.html', {'leave_requests': leave_requests})
 
 def logout_view(request):
     logout(request)  # This will log out the user

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approve Leave</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+<body>    
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <ul>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="{% url 'counsellor_approve_leave' %}">Approve Leave</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div id="content">
+            <header>
+                <button id="sidebarToggle">&#9776;</button>
+                <h1>Approve Leave</h1>
+            </header>
+        </div>
+    </div>
+    <main>
+        <div class="table-container">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Leave Type</th>
+                        <th>Date</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Reason</th>
+                        <th>Proof</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leave in leave_requests %}
+                    <tr>
+                        <td>
+                            <span class="tooltip" title="
+                                Name: {{ leave.student.name }}
+                                Reg No: {{ leave.student.reg_no }}
+                                Email: {{ leave.student.email }}
+                                Mobile: {{ leave.student.mobile_no }}
+                            ">
+                                {{ leave.student.name }}
+                            </span>
+                        </td>
+                        <td>{{ leave.leave_type }}</td>
+                        <td>{{ leave.date }}</td>
+                        <td>{{ leave.start_date }}</td>
+                        <td>{{ leave.end_date }}</td>
+                        <td>{{ leave.reason }}</td>
+                        <td>
+                            {% if leave.proof %}
+                            <a href="{{ leave.proof.url }}" target="_blank">View Proof</a>
+                            {% else %}
+                            No Proof
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form id="leave-form-{{ leave.id }}" method="POST" style="display: none;">
+                                {% csrf_token %}
+                                <input type="hidden" name="leave_id" value="{{ leave.id }}">
+                                <input type="hidden" name="comments" value="">
+                                <input type="hidden" name="action" value="">
+                            </form>
+                            <button class="action-button" type="button" onclick="handleAction('{{ leave.id }}', 'approve')">Approve</button>
+                            <button class="action-button" type="button" onclick="handleAction('{{ leave.id }}', 'reject')">Reject</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script src="{% static 'js/base.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

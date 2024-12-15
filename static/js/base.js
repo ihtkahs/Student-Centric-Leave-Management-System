@@ -60,4 +60,24 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-  
+function handleAction(leaveId, action) {
+    // Prompt for comments using SweetAlert
+    Swal.fire({
+        title: 'Add a Comment',
+        input: 'textarea',
+        inputPlaceholder: 'Enter your comment...',
+        showCancelButton: true,
+        confirmButtonText: 'Submit',
+        cancelButtonText: 'Cancel',
+        preConfirm: (comment) => {
+            if (!comment) {
+                Swal.showValidationMessage('Please add a comment');
+                return false;
+            }
+            // Submit the form with action and comment
+            document.getElementById('leave-form-' + leaveId).elements['comments'].value = comment;
+            document.getElementById('leave-form-' + leaveId).elements['action'].value = action;
+            document.getElementById('leave-form-' + leaveId).submit();
+        }
+    });
+}
