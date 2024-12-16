@@ -66,6 +66,7 @@ def apply_leave(request):
             counsellor = student.counsellor
 
             # Save the leave request data
+            total_leave_days = form.cleaned_data.get("total_leave_days")
             leave_request = LeaveRequest.objects.create(
                 student=student,
                 counsellor=counsellor,
@@ -77,6 +78,9 @@ def apply_leave(request):
                 reason=form.cleaned_data["reason"],
                 proof=form.cleaned_data["proof"],
             )
+            student.leave_taken += total_leave_days
+            student.balance_leave = max(0, student.balance_leave - total_leave_days)
+            student.save()
 
             # Save the initial leave status
             LeaveStatus.objects.create(

@@ -31,6 +31,36 @@ class LeaveApplicationForm(forms.Form):
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
         proof = cleaned_data.get("proof")
+        reason = cleaned_data.get("reason")
+
+        # Validate leave duration
+        total_leave_days = 0
+        if duration == "single" and date_field:
+            total_leave_days = 1
+        elif duration == "multiple" and start_date and end_date:
+            total_leave_days = (end_date - start_date).days + 1
+
+        # Restrict past dates
+        today = date.today()
+        if date_field and date_field < today:
+            self.add_error("date", "Selected date cannot be in the past.")
+        if start_date and start_date < today:
+            self.add_error("start_date", "Start date cannot be in the past.")
+        if end_date and end_date < today:
+            self.add_error("end_date", "End date cannot be in the past.")
+
+        # Reason minimum character length
+        if len(reason) < 5:
+            self.add_error("reason", "Reason must be at least 10 characters long.")
+
+        if duration == "multiple" and  start_date >= end_date:
+            self.add_error("end_date", "End date cannot be earlier than the start date.")
+
+        # Validate file type for proof
+        if proof:
+            allowed_types = ['application/pdf', 'image/jpeg', 'image/png']
+            if proof.content_type not in allowed_types:
+                self.add_error("proof", "Only PDF, JPG, or PNG files are allowed.")
 
         # Validation based on leave type
         if leave_type == "casual":
