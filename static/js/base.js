@@ -60,24 +60,62 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-function handleAction(leaveId, action) {
-    // Prompt for comments using SweetAlert
+function handleApproveAction(leaveId, action) {
+    // Ask for comments when approving
+    const userRole = "{{ user_role }}";
     Swal.fire({
         title: 'Add a Comment',
         input: 'textarea',
         inputPlaceholder: 'Enter your comment...',
         showCancelButton: true,
-        confirmButtonText: 'Submit',
+        confirmButtonText: 'Approve',
         cancelButtonText: 'Cancel',
         preConfirm: (comment) => {
             if (!comment) {
                 Swal.showValidationMessage('Please add a comment');
                 return false;
             }
-            // Submit the form with action and comment
-            document.getElementById('leave-form-' + leaveId).elements['comments'].value = comment;
-            document.getElementById('leave-form-' + leaveId).elements['action'].value = action;
-            document.getElementById('leave-form-' + leaveId).submit();
+            // Add comment and action to the form, then submit
+            const form = document.getElementById('leave-form-' + leaveId);
+            form.elements['comments'].value = comment;
+            form.elements['action'].value = action;
+            form.submit(); // Submit the form
+        }
+    }).then(() => {
+        // Redirect based on role
+        if (userRole === "counsellor") {
+            window.location.href = "/lms/counsellor/approve/leave";
+        } else if (userRole === "hod") {
+            window.location.href = "/lms/hod/approve/leave";
+        }
+    });
+}
+
+function handleRejectAction(leaveId, action) {
+    const userRole = "{{ user_role }}";
+    // Ask for comments when approving
+    Swal.fire({
+        title: 'Add a Comment?',
+        icon: 'warning',
+        input: 'textarea',
+        inputPlaceholder: 'Enter your comment...',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Reject',
+        cancelButtonText: 'Cancel',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Add rejection action and submit
+            const form = document.getElementById('leave-form-' + leaveId);
+            form.elements['comments'].value = 'Rejected without specific comment';
+            form.elements['action'].value = action;
+            form.submit(); // Submit the form
+        }
+    }).then(() => {
+        // Redirect based on role
+        if (userRole === "counsellor") {
+            window.location.href = "/lms/counsellor/approve/leave";
+        } else if (userRole === "hod") {
+            window.location.href = "/lms/hod/approve/leave";
         }
     });
 }

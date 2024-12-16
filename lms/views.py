@@ -113,11 +113,10 @@ def counsellor_approve_leave(request):
     if not hasattr(request.user, 'counsellor'):  # Ensure the user is a counsellor
         return redirect('home')  # Redirect to the home page if not a counsellor
 
-    # Filter leave requests for the students assigned to this counsellor
     counsellor = request.user.counsellor
     leave_requests = LeaveRequest.objects.filter(
-        status_history__status='pending',  # Use the reverse relation to filter by LeaveStatus
-        student__counsellor=counsellor               # Ensure the leave request belongs to this counsellor's student
+        status_history__status='pending',
+        student__counsellor=counsellor
     ).select_related('student').distinct()
 
     if request.method == 'POST':
@@ -126,12 +125,14 @@ def counsellor_approve_leave(request):
         comments = request.POST.get('comments', '')
 
         leave_request = get_object_or_404(LeaveRequest, id=leave_id)
-        leave_status = leave_request.status_history.last()  # Get the latest status record
+        leave_status = leave_request.status_history.last()
 
-        # Ensure the counsellor is handling their student's leave request
         if leave_request.student.counsellor != counsellor:
             messages.error(request, "Unauthorized action!")
             return redirect('counsellor_dashboard')
+
+        student_email = leave_request.student.email  # Get the student's email
+        student_name = leave_request.student.name  # Get the student's name
 
         # Update leave status based on action
         if action == 'approve':
@@ -139,19 +140,134 @@ def counsellor_approve_leave(request):
             leave_status.counsellor_comment = comments
             leave_status.save()
 
-            # Notify HOD only if counsellor approves
+            # Notify the student about the approval and forward to HOD
+            subject = "Your Leave Request Has Been Approved by the Counsellor"
+            message = (
+                f"Dear {student_name},\n\n"
+                f"Your leave request for {leave_request.leave_type} has been approved by your counsellor.\n\n"
+                f"Reason: {leave_request.reason}\n"
+                f"Date: {leave_request.date}\n\n"
+                f"Start Date: {leave_request.start_date}\n"
+                f"End Date: {leave_request.end_date}\n\n"
+                f"Comments from Counsellor: {comments}\n\n"
+                f"Your leave request is now being forwarded to the HOD for further approval.\n\n"
+                f"Best regards,\nLeave Management System"
+            )
+            send_mail(subject, message, "ihtkahs251004@gmail.com", [student_email], fail_silently=True)
+
             messages.success(request, "Leave request forwarded to HOD.")
+        
         elif action == 'reject':
             leave_status.status = 'rejected_by_counsellor'
             leave_status.counsellor_comment = comments
             leave_status.save()
 
-            # Update leave request status as rejected
+            # Notify the student about the rejection
+            subject = "Your Leave Request Has Been Rejected by the Counsellor"
+            message = (
+                f"Dear {student_name},\n\n"
+                f"Unfortunately, your leave request for {leave_request.leave_type} has been rejected by your counsellor.\n\n"
+                f"Reason: {leave_request.reason}\n"
+                f"Date: {leave_request.date}\n\n"
+                f"Start Date: {leave_request.start_date}\n"
+                f"End Date: {leave_request.end_date}\n\n"
+                f"Comments from Counsellor: {comments}\n\n"
+                f"Please contact your counsellor for more details.\n\n"
+                f"Best regards,\nLeave Management System"
+            )
+            send_mail(subject, message, "ihtkahs251004@gmail.com", [student_email], fail_silently=True)
+
             messages.success(request, "Leave request rejected.")
 
-        return redirect('counsellor_dashboard')
+        return redirect('counsellor_approve_leave')
 
-    return render(request, 'counsellor_approve_leave.html', {'leave_requests': leave_requests})
+    return render(request, 'counsellor_approve_leave.html', {'leave_requests': leave_requests, 'user_role': request.user})
+    
+
+@login_required
+def hod_approve_leave(request):
+    if not hasattr(request.user, 'hod'):  # Ensure the user is an HOD
+        return redirect('home')  # Redirect to the home page if not an HOD
+
+    hod = request.user.hod
+
+    # Filter leave requests that are approved by counsellor and pending HOD approval
+    leave_requests = LeaveRequest.objects.filter(
+        status_history__status='approved_by_counsellor',
+        student__department=hod.department  # Filter leave requests for the HOD's department
+    ).select_related('student').distinct()
+
+    if request.method == 'POST':
+        leave_id = request.POST.get('leave_id')
+        action = request.POST.get('action')
+        comments = request.POST.get('comments', '')
+
+        leave_request = get_object_or_404(LeaveRequest, id=leave_id)
+        leave_status = leave_request.status_history.last()
+
+        # Ensure the HOD is handling leave requests for their department
+        if leave_request.student.department != hod.department:
+            messages.error(request, "Unauthorized action!")
+            return redirect('hod_dashboard')
+
+        student_email = leave_request.student.email
+        student_name = leave_request.student.name
+
+        # Update leave status based on action
+        if action == 'approve':
+            leave_status.status = 'approved_by_hod'
+            leave_status.hod_comment = comments
+            leave_status.save()
+
+            # Notify student about the HOD's approval
+            subject = "Your Leave Request Has Been Approved by the HOD"
+            message = (
+                f"Dear {student_name},\n\n"
+                f"Your leave request for {leave_request.leave_type} has been approved by the HOD.\n\n"
+                f"Details:\n"
+                f"Reason: {leave_request.reason}\n"
+                f"Date: {leave_request.date}\n"
+                f"Start Date: {leave_request.start_date}\n"
+                f"End Date: {leave_request.end_date}\n\n"
+                f"Comments from HOD: {comments}\n\n"
+                f"Enjoy your leave!\n\n"
+                f"Best regards,\nLeave Management System"
+            )
+            send_mail(subject, message, "ihtkahs251004@gmail.com", [student_email], fail_silently=True)
+
+            messages.success(request, "Leave request approved successfully.")
+
+        elif action == 'reject':
+            leave_status.status = 'rejected_by_hod'
+            leave_status.hod_comment = comments
+            leave_status.save()
+
+            # Notify student about the HOD's rejection
+            subject = "Your Leave Request Has Been Rejected by the HOD"
+            message = (
+                f"Dear {student_name},\n\n"
+                f"Unfortunately, your leave request for {leave_request.leave_type} has been rejected by the HOD.\n\n"
+                f"Details:\n"
+                f"Reason: {leave_request.reason}\n"
+                f"Date: {leave_request.date}\n"
+                f"Start Date: {leave_request.start_date}\n"
+                f"End Date: {leave_request.end_date}\n\n"
+                f"Comments from HOD: {comments}\n\n"
+                f"Please contact the HOD for further clarification.\n\n"
+                f"Best regards,\nLeave Management System"
+            )
+            send_mail(subject, message, "ihtkahs251004@gmail.com", [student_email], fail_silently=True)
+
+            messages.success(request, "Leave request rejected.")
+
+        return redirect('hod_approve_leave')
+
+    return render(request, 'hod_approve_leave.html', {'leave_requests': leave_requests, 'user_role': request.user})
+
+@login_required
+def leave_history(request):
+    # You can pass any context you need here
+    return render(request, 'leave_history.html')
 
 def logout_view(request):
     logout(request)  # This will log out the user
