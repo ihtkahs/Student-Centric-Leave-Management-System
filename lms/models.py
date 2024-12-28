@@ -1,6 +1,32 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class Semester(models.Model):
+    SEMESTER_CHOICES = [
+        (1, "Semester 1"),
+        (2, "Semester 2"),
+        (3, "Semester 3"),
+        (4, "Semester 4"),
+        (5, "Semester 5"),
+        (6, "Semester 6"),
+    ]
+
+    name = models.IntegerField(choices=SEMESTER_CHOICES)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    year = models.IntegerField()  # Year of study (1st, 2nd, etc.)
+    is_active = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            Semester.objects.filter(
+                year=self.year,
+            ).exclude(id=self.id).update(is_active=False)
+        super().save(*args, **kwargs)  # Avoid calling save() again
+
+    def __str__(self):
+        return f"{self.get_name_display()} - {self.year} Year"
+
 class Student(models.Model):
     reg_no = models.CharField(max_length=12, unique=True, null=True, blank=True, default=None)  # Registration Number
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, default=None)  # Link to Django User model
@@ -15,9 +41,10 @@ class Student(models.Model):
     balance_leave = models.IntegerField(default=6)
     photo = models.ImageField(upload_to='photos/', blank=True, null=True)
     counsellor = models.ForeignKey("Counsellor", on_delete=models.SET_NULL, null=True, blank=True)
+    current_semester = models.ForeignKey(Semester, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - Year {self.year} - {self.department}"
 
 class Counsellor(models.Model):
     staffID = models.CharField(max_length=12, unique=True, null=True, blank=True, default=None)  # Staff ID for login

@@ -43,6 +43,11 @@
             <p><span class="profile-label">Section:</span> {{ student.section }}</p>
             <p><span class="profile-label">Email:</span> {{ student.email }}</p>
             <p><span class="profile-label">Mobile No.:</span> {{ student.mobile_no }}</p>
+            {% if semester %}
+                <p><span class="profile-label">Current Semester:</span> {{ semester.get_name_display }}</p>
+            {% else %}
+                <p><span class="profile-label">Current Semester:</span> No active semester found.</p>
+            {% endif %}
         </div>
     </main>
 

@@ -53,7 +53,8 @@ def hod_dashboard(request):
 def my_profile(request):
     # Fetch the logged-in student's profile
     student = Student.objects.get(user=request.user)  # Assuming user is logged in
-    context = {'student': student}
+    semester = student.current_semester
+    context = {'student': student, 'semester': semester,}
     return render(request, 'my_profile.html', context)
 
 @login_required
