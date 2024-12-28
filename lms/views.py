@@ -8,6 +8,7 @@ from .models import Student, LeaveRequest, Counsellor, LeaveStatus
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
+from datetime import timedelta
 
 # Custom login view
 def custom_login(request):
@@ -211,14 +212,39 @@ def hod_approve_leave(request):
             messages.error(request, "Unauthorized action!")
             return redirect('hod_dashboard')
 
+        student = leave_request.student
         student_email = leave_request.student.email
         student_name = leave_request.student.name
+
+        # Calculate leave days
+        def calculate_leave_days(start, end):
+            leave_days = 0
+            current_date = start
+            while current_date <= end:
+                # Exclude Sundays (weekday 6 is Sunday)
+                if current_date.weekday() != 6:
+                    leave_days += 1
+                current_date += timedelta(days=1)
+            return leave_days
 
         # Update leave status based on action
         if action == 'approve':
             leave_status.status = 'approved_by_hod'
             leave_status.hod_comment = comments
             leave_status.save()
+
+            # Calculate leave days and update student record
+            if leave_request.duration == 'single':
+                leave_days = 1
+            else:
+                leave_days = calculate_leave_days(
+                    leave_request.start_date,
+                    leave_request.end_date
+                )
+
+            student.leave_taken += leave_days
+            student.balance_leave -= leave_days
+            student.save()
 
             # Notify student about the HOD's approval
             subject = "Your Leave Request Has Been Approved by the HOD"
