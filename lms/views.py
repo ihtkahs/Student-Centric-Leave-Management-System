@@ -72,6 +72,7 @@ def apply_leave(request):
             leave_request = LeaveRequest.objects.create(
                 student=student,
                 counsellor=counsellor,
+                semester=student.current_semester,
                 leave_type=form.cleaned_data["leave_type"],
                 duration=form.cleaned_data["duration"],
                 date=form.cleaned_data["date"],

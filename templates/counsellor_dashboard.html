@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Counsellor Dashboard</title>
+    <!-- EvoCalendar CSS -->
+    <link rel="stylesheet" href="{% static 'css/evo-calendar.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
 </head>
 <body>    
@@ -25,11 +27,23 @@
                 <h1>Counsellor Dashboard</h1>
             </header>
             <main>
-                <p>Welcome to the Counsellor Dashboard!</p>
+                <div class="calendar-container">
+                    <p>Welcome to the Student Dashboard!</p>
+                    <div id="calendar"></div>
+                </div>
             </main>
         </div>
     </div>
-
+    <!-- EvoCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+    <script src="{% static 'js/evo-calendar.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('#calendar').evoCalendar({
+                
+            });
+        });
+    </script>
     <script src="{% static 'js/base.js' %}"></script>
 
 </body>
