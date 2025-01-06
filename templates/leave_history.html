@@ -29,12 +29,70 @@
                 <h1>Leave History</h1>
             </header>
             
+            <main>
+                <h2>Your Leave Records</h2>
+                <table border="1" cellspacing="0" cellpadding="10">
+                    <thead>
+                        <tr>
+                            <th>Date Submitted</th>
+                            <th>Leave Type</th>
+                            <th>Reason</th>
+                            <th>Proof</th>
+                            <th>Status</th>
+                            <th>Comments</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for leave in user_leaves %}
+                        <tr>
+                            <td>{{ leave.submitted_at|date:"d M Y, H:i" }}</td>
+                            <td>{{ leave.leave_type }}</td>
+                            <td>{{ leave.reason }}</td>
+                            <td>
+                                {% if leave.proof %}
+                                    <a href="{{ leave.proof.url }}" target="_blank">View Proof</a>
+                                {% else %}
+                                    No Proof
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if leave_statuses.status == "pending" %}
+                                    <span style="color: green; font-weight: bold;">Pending</span>
+                                {% elif leave_statuses.status == "approved_by_counsellor" %}
+                                    <span style="color: red; font-weight: bold;">Counsellor Approved</span>
+                                {% elif leave_statuses.status == "rejected_by_counsellor" %}
+                                    <span style="color: red; font-weight: bold;">Counsellor Rejected</span>
+                                {% elif leave_statuses.status == "approved_by_hod" %}
+                                    <span style="color: red; font-weight: bold;">HOD Approved</span>
+                                {% elif leave_statuses.status == "rejected_by_hod" %}
+                                    <span style="color: red; font-weight: bold;">HOD Rejected</span>
+                                {% elif leave_statuses.status == "final_approved" %}
+                                    <span style="color: red; font-weight: bold;">Approved</span>
+                                {% elif leave_statuses.status == "final_approved" %}
+                                    <span style="color: red; font-weight: bold;">Approved</span>
+                                {% elif leave_statuses.status == "final_rejected" %}
+                                    <span style="color: red; font-weight: bold;">Rejected</span>
+                                {% else %}
+                                    <span style="color: orange; font-weight: bold;">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ leave.comments|default:"N/A" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6">No leave records found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+            </main>
         </div>
-        
     </div>
-    <main>
-      
-    </main>
-    
 </body>
 </html>
+
+
+
+
+
