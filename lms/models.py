@@ -96,10 +96,11 @@ class LeaveStatus(models.Model):
     ]
 
     leave_request = models.ForeignKey(LeaveRequest, related_name="status_history", on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, default=1)
     status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='pending')
     counsellor_comment = models.TextField(null=True, blank=True)
     hod_comment = models.TextField(null=True, blank=True)
     changed_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Leave Request {self.leave_request.id} - Status: {self.get_status_display()}"
+        return f"Status for LeaveRequest {self.leave_request.id} - {self.status} - {self.student.id}"
