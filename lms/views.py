@@ -295,8 +295,14 @@ def hod_approve_leave(request):
 
 @login_required
 def leave_history(request):
-    # You can pass any context you need here
-    return render(request, 'leave_history.html')
+    student = get_object_or_404(Student, user=request.user)  # Get the logged-in student
+    user_leaves = LeaveRequest.objects.filter(student=student).order_by('-submitted_at')
+    leave_statuses = LeaveStatus.objects.filter(student=student).order_by('-changed_at')
+    context = {
+        'user_leaves': user_leaves,
+        'leave_statuses': leave_statuses,
+    }
+    return render(request, 'leave_history.html', context)
 
 def logout_view(request):
     logout(request)  # This will log out the user
