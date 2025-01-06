@@ -8,6 +8,7 @@ from .models import Student, LeaveRequest, Counsellor, LeaveStatus
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
+from django.db.models import OuterRef, Subquery
 from datetime import timedelta
 
 # Custom login view
@@ -295,12 +296,28 @@ def hod_approve_leave(request):
 
 @login_required
 def leave_history(request):
-    student = get_object_or_404(Student, user=request.user)  # Get the logged-in student
-    user_leaves = LeaveRequest.objects.filter(student=student).order_by('-submitted_at')
-    leave_statuses = LeaveStatus.objects.filter(student=student).order_by('-changed_at')
+    student = get_object_or_404(Student, user=request.user)
+
+    latest_status = LeaveStatus.objects.filter(
+        leave_request=OuterRef('pk')
+    ).order_by('-changed_at').values('status')[:1]
+
+    counsellor_comment = LeaveStatus.objects.filter(
+        leave_request=OuterRef('pk')
+    ).order_by('-changed_at').values('counsellor_comment')[:1]
+
+    hod_comment = LeaveStatus.objects.filter(
+        leave_request=OuterRef('pk')
+    ).order_by('-changed_at').values('hod_comment')[:1]
+
+    user_leaves = LeaveRequest.objects.filter(student=student).annotate(
+        latest_status=Subquery(latest_status),
+        counsellor_comment=Subquery(counsellor_comment),
+        hod_comment=Subquery(hod_comment)
+    ).order_by('-submitted_at')
+
     context = {
         'user_leaves': user_leaves,
-        'leave_statuses': leave_statuses,
     }
     return render(request, 'leave_history.html', context)
 

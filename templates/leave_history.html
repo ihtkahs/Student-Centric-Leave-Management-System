@@ -56,27 +56,42 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% if leave_statuses.status == "pending" %}
-                                    <span style="color: green; font-weight: bold;">Pending</span>
-                                {% elif leave_statuses.status == "approved_by_counsellor" %}
-                                    <span style="color: red; font-weight: bold;">Counsellor Approved</span>
-                                {% elif leave_statuses.status == "rejected_by_counsellor" %}
+                                {% if leave.latest_status == "pending" %}
+                                    <span style="color: orange; font-weight: bold;">Pending</span>
+                                {% elif leave.latest_status == "approved_by_counsellor" %}
+                                    <span style="color: blue; font-weight: bold;">Counsellor Approved</span>
+                                {% elif leave.latest_status == "rejected_by_counsellor" %}
                                     <span style="color: red; font-weight: bold;">Counsellor Rejected</span>
-                                {% elif leave_statuses.status == "approved_by_hod" %}
-                                    <span style="color: red; font-weight: bold;">HOD Approved</span>
-                                {% elif leave_statuses.status == "rejected_by_hod" %}
+                                {% elif leave.latest_status == "approved_by_hod" %}
+                                    <span style="color: green; font-weight: bold;">HOD Approved</span>
+                                {% elif leave.latest_status == "rejected_by_hod" %}
                                     <span style="color: red; font-weight: bold;">HOD Rejected</span>
-                                {% elif leave_statuses.status == "final_approved" %}
-                                    <span style="color: red; font-weight: bold;">Approved</span>
-                                {% elif leave_statuses.status == "final_approved" %}
-                                    <span style="color: red; font-weight: bold;">Approved</span>
-                                {% elif leave_statuses.status == "final_rejected" %}
+                                {% elif leave.latest_status == "final_approved" %}
+                                    <span style="color: green; font-weight: bold;">Approved</span>
+                                {% elif leave.latest_status == "final_rejected" %}
                                     <span style="color: red; font-weight: bold;">Rejected</span>
                                 {% else %}
-                                    <span style="color: orange; font-weight: bold;">Pending</span>
+                                    <span style="color: gray; font-weight: bold;">Unknown</span>
                                 {% endif %}
                             </td>
-                            <td>{{ leave.comments|default:"N/A" }}</td>
+                            <td>
+                                <div>
+                                    <strong>Counsellor:</strong> 
+                                    {% if leave.counsellor_comment %}
+                                        {{ leave.counsellor_comment }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <strong>HOD:</strong> 
+                                    {% if leave.hod_comment %}
+                                        {{ leave.hod_comment }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </div>
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
@@ -84,7 +99,6 @@
                         </tr>
                         {% endfor %}
                     </tbody>
-                    
                 </table>
             </main>
         </div>
