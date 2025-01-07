@@ -72,6 +72,7 @@ class HOD(models.Model):
 class LeaveRequest(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     counsellor = models.ForeignKey(Counsellor, on_delete=models.SET_NULL, null=True, blank=True)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, default=1)
     leave_type = models.CharField(max_length=20)
     duration = models.CharField(max_length=10)
     date = models.DateField(null=True, blank=True)
