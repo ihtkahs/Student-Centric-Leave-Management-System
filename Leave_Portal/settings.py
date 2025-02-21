@@ -149,5 +149,5 @@ EMAIL_HOST_PASSWORD = "qycjcqwweqehefpv"  # Replace with your email password or 
 EMAIL_USE_SSL = False
 
 # Session timeout (e.g., 5 minutes)
-SESSION_COOKIE_AGE = 300  # 300 seconds = 5 minutes
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+#SESSION_COOKIE_AGE = 300  # 300 seconds = 5 minutes
+#SESSION_EXPIRE_AT_BROWSER_CLOSE = True

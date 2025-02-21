@@ -22,6 +22,7 @@ class LeaveApplicationForm(forms.Form):
     start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=False)
     end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=False)
     proof = forms.FileField(required=False)
+    print("form")
 
     def clean(self):
         cleaned_data = super().clean()
@@ -32,6 +33,7 @@ class LeaveApplicationForm(forms.Form):
         end_date = cleaned_data.get("end_date")
         proof = cleaned_data.get("proof")
         reason = cleaned_data.get("reason")
+        print("cleaned data")
 
         # Validate leave duration
         total_leave_days = 0
@@ -39,6 +41,7 @@ class LeaveApplicationForm(forms.Form):
             total_leave_days = 1
         elif duration == "multiple" and start_date and end_date:
             total_leave_days = (end_date - start_date).days + 1
+        print("total leave")
 
         # Restrict past dates
         today = date.today()
@@ -48,6 +51,7 @@ class LeaveApplicationForm(forms.Form):
             self.add_error("start_date", "Start date cannot be in the past.")
         if end_date and end_date < today:
             self.add_error("end_date", "End date cannot be in the past.")
+        print("date check")
 
         # Reason minimum character length
         if len(reason) < 5:

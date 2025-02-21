@@ -88,6 +88,7 @@ def apply_leave(request):
                 leave_request=leave_request,
                 status='pending',
             )
+            print("object created")
 
             # Send a success email
             subject="Leave Request Submitted Successfully"
@@ -105,6 +106,7 @@ def apply_leave(request):
             email = student.email
             recipient_list=[email]
             send_mail(subject, message, "ihtkahs251004@gmail.com", recipient_list, fail_silently=True)
+            print("Sent email")
 
             success_message = "Leave submitted successfully!"
             return render(request, "apply_leave.html", {"form": form, "success_message": success_message})
