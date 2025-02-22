@@ -28,10 +28,9 @@
                 <button id="sidebarToggle">&#9776;</button>
                 <h1>Apply Leave</h1>
             </header>
-            
         </div>
-        
     </div>
+
     <main>
         {% if success_message %}
             <div id="successMessage" style="display: none;">{{ success_message }}</div>
@@ -39,35 +38,85 @@
 
         <form method="post" enctype="multipart/form-data" id="leaveForm">
             {% csrf_token %}
+
             <div>{{ form.leave_type.label }}</div>
             <div>{{ form.leave_type }}</div>
-    
+            {% if form.leave_type.errors %}
+                <div class="text-danger">
+                    {% for error in form.leave_type.errors %}
+                        <small>{{ error }}</small><br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <div>{{ form.duration.label }}</div>
             <div>{{ form.duration }}</div>
-    
+            {% if form.duration.errors %}
+                <div class="text-danger">
+                    {% for error in form.duration.errors %}
+                        <small>{{ error }}</small><br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <div>{{ form.reason.label }}</div>
             <div>{{ form.reason }}</div>
-    
+            {% if form.reason.errors %}
+                <div class="text-danger">
+                    {% for error in form.reason.errors %}
+                        <small>{{ error }}</small><br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <div id="dateField" style="display: none;">
                 <p>{{ form.date.label }}</p>
                 <div>{{ form.date }}</div>
+                {% if form.date.errors %}
+                    <div class="text-danger">
+                        {% for error in form.date.errors %}
+                            <small>{{ error }}</small><br>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
-    
+
             <div id="dateRangeField" style="display: none;">
                 <p>{{ form.start_date.label }}</p>
                 <div>{{ form.start_date }}</div>
+                {% if form.start_date.errors %}
+                    <div class="text-danger">
+                        {% for error in form.start_date.errors %}
+                            <small>{{ error }}</small><br>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
                 <p>{{ form.end_date.label }}</p>
                 <div>{{ form.end_date }}</div>
+                {% if form.end_date.errors %}
+                    <div class="text-danger">
+                        {% for error in form.end_date.errors %}
+                            <small>{{ error }}</small><br>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
-    
+
             <div id="proofField" style="display: none;">
                 <p>{{ form.proof.label }}</p>
                 <div>{{ form.proof }}</div>
+                {% if form.proof.errors %}
+                    <div class="text-danger">
+                        {% for error in form.proof.errors %}
+                            <small>{{ error }}</small><br>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
-    
+
             <button type="submit">Submit</button>
         </form>
     </main>
-    
 </body>
 </html>
