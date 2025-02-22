@@ -44,25 +44,23 @@
     <script src="{% static 'js/evo-calendar.js' %}"></script>
     <script>
         $(document).ready(function () {
-            // Check if #calendar exists
-            if ($('#calendar').length) {
-                console.log("Initializing calendar...");
-                
-                // Initialize evoCalendar
-                $('#calendar').evoCalendar({
-                    theme: "Midnight Blue"
-                });
+            try {
+                var events = JSON.parse('{{ events|escapejs }}'); // Safely parse JSON from Django
     
-                // Add an event after initialization
-                $('#calendar').evoCalendar('addCalendarEvent', {
-                    id: 'kNybja6',
-                    name: 'Mom\'s Birthday',
-                    description: 'Lorem ipsum dolor sit..',
-                    date: 'February 27, 2025',
-                    type: 'birthday'
-                });
-            } else {
-                console.error("Error: #calendar element not found!");
+                if ($('#calendar').length) {
+                    console.log("Initializing calendar...");
+    
+                    $('#calendar').evoCalendar({
+                        theme: "Midnight Blue",
+                        calendarEvents: events
+                    });
+    
+                    console.log("Events loaded:", events);
+                } else {
+                    console.error("Error: #calendar element not found!");
+                }
+            } catch (error) {
+                console.error("Failed to parse events:", error);
             }
         });
     </script>

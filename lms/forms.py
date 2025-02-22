@@ -55,7 +55,7 @@ class LeaveApplicationForm(forms.Form):
 
         # Reason minimum character length
         if len(reason) < 5:
-            self.add_error("reason", "Reason must be at least 10 characters long.")
+            self.add_error("reason", "Reason must be at least 5 characters long.")
 
         if duration == "multiple" and  start_date >= end_date:
             self.add_error("end_date", "End date cannot be earlier than the start date.")

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student, Counsellor, HOD, LeaveRequest, LeaveStatus, Semester
+from .models import Student, Counsellor, HOD, LeaveRequest, LeaveStatus, Semester, Event
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -31,3 +31,9 @@ def assign_semester_on_student_creation(sender, instance, **kwargs):
     if active_semester:
         instance.current_semester = active_semester
         instance.save()
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    list_display = ('title', 'start_date', 'end_date', 'event_type')
+    list_filter = ('event_type', 'semester')
+    search_fields = ('title', 'description')

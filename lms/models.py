@@ -105,3 +105,19 @@ class LeaveStatus(models.Model):
 
     def __str__(self):
         return f"Status for LeaveRequest {self.leave_request.id} - {self.status} - {self.student.id}"
+
+class Event(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    event_type = models.CharField(max_length=100, choices=[
+        ('exam', 'Exam'),
+        ('holiday', 'Holiday'),
+        ('meeting', 'Meeting'),
+    ])
+    semester = models.ForeignKey('Semester', on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.title

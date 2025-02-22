@@ -4,12 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import LeaveApplicationForm
-from .models import Student, LeaveRequest, Counsellor, LeaveStatus
+from .models import Student, LeaveRequest, Counsellor, LeaveStatus, Event
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
 from django.db.models import OuterRef, Subquery
 from datetime import timedelta
+import json
 
 # Custom login view
 def custom_login(request):
@@ -37,8 +38,25 @@ def custom_login(request):
 # Dashboard Views
 @login_required
 def student_dashboard(request):
-    # You can pass any context you need here
-    return render(request, 'student_dashboard.html')
+    events = Event.objects.all()
+    event_list = []
+    
+    for event in events:
+        event_list.append({
+            "id": event.id,
+            "name": event.title,
+            "description": event.description,
+            "date": event.start_date.strftime('%Y/%m/%d'),
+            "endDate": event.end_date.strftime('%Y/%m/%d'),
+            "type": event.event_type,
+        })
+
+    print(event_list)
+    
+    context = {
+        'events': json.dumps(event_list)
+    }
+    return render(request, 'student_dashboard.html', context)
 
 @login_required
 def counsellor_dashboard(request):
