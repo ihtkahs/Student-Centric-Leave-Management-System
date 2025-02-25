@@ -19,12 +19,17 @@ from django.urls import path, include
 from lms.views import homepage, custom_login, logout_view
 from django.conf import settings
 from django.conf.urls.static import static
+from lms import views
 
 urlpatterns = [
-    path('', homepage, name='homepage'),
+    path('', homepage, name='homepage'),  # This can remain as the homepage
     path('login/', custom_login, name='login'),  # Use custom login view
     path('logout/', logout_view, name='logout'),
     path('admin/', admin.site.urls),
+    path('index/', views.index, name='index'),  # Use '/index' instead of '' to avoid conflict
+    path('apply-leave/', views.apply_leave, name='apply_leave'),  # The form to apply for leave
+    path('chatbot-response/', views.chatbot_response, name='chatbot_response'),
+   
     path('lms/', include('lms.urls')),
 ]
 

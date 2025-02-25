@@ -11,6 +11,13 @@ from django.contrib import messages
 from django.db.models import OuterRef, Subquery
 from datetime import timedelta
 import json
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import LeaveChatbot
+from django.shortcuts import render
+
+def index(request):
+    return render(request, 'chat.html')  # Assuming you have an 'index.html' template
 
 # Custom login view
 def custom_login(request):
@@ -87,6 +94,14 @@ def apply_leave(request):
             # Fetch the student's counsellor
             counsellor = student.counsellor
             print(counsellor)
+            duration = str(form.cleaned_data["duration"]).strip().lower()
+            duration_map = {"single": 1, "one": 1, "two": 2}  # Handle common cases
+            duration = duration_map.get(duration, duration)  # Convert text to number if applicable
+            
+            try:
+                duration = int(duration)  # Ensure it's an integer
+            except ValueError:
+                return JsonResponse({"error": "Invalid duration value. Please enter a number."}, status=400)
 
             leave_request = LeaveRequest.objects.create(
                 student=student,
@@ -130,7 +145,10 @@ def apply_leave(request):
             return render(request, "apply_leave.html", {"form": form, "success_message": success_message})
     else:
         form = LeaveApplicationForm()
-
+    if request.method == 'POST' and 'message' in request.POST:
+        user_message = request.POST.get('message')
+        bot_response = leave_bot.get_response(user_message)
+        return JsonResponse({"response": str(bot_response)})
     return render(request, "apply_leave.html", {"form": form})
 
 @login_required
@@ -340,10 +358,32 @@ def leave_history(request):
         'user_leaves': user_leaves,
     }
     return render(request, 'leave_history.html', context)
+# Chatbot views for leave requests
+leave_bot = LeaveChatbot()
 
+def chatbot_view(request):
+    return render(request, 'chatbot/chat.html')
+
+
+def chatbot_response(request):
+    if request.method == "POST":
+        user_message = request.POST.get('message')
+        
+        # Get the logged-in student's email
+        student_email = request.user.email  # assuming the user is logged in
+        
+        # Pass both user_message and student_email to the chatbot's get_response method
+        bot_response = leave_bot.get_response(user_message, student_email)
+        
+        return JsonResponse({"response": str(bot_response)})
+
+
+# Logout View
 def logout_view(request):
-    logout(request)  # This will log out the user
+    logout(request)
     return redirect('homepage')
 
+
+# Homepage view
 def homepage(request):
     return render(request, 'homepage.html')

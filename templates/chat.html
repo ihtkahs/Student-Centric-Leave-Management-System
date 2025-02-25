@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #chatbox { width: 50%; margin: auto; height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; }
+        .user, .bot { padding: 8px; margin: 5px; border-radius: 5px; }
+        .user { background: lightblue; text-align: right; }
+        .bot { background: lightgray; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <h2>Leave Request Chatbot</h2>
+    <div id="chatbox"></div>
+
+    <input type="text" id="userInput" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        function sendMessage() {
+            let userText = document.getElementById("userInput").value;
+            document.getElementById("chatbox").innerHTML += `<div class='user'>${userText}</div>`;
+            document.getElementById("userInput").value = "";
+
+            fetch("{% url 'chatbot_response' %}", {
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}", "Content-Type": "application/x-www-form-urlencoded" },
+                body: "message=" + encodeURIComponent(userText)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("chatbox").innerHTML += `<div class='bot'>${data.response}</div>`;
+            });
+        }
+    </script>
+
+</body>
+</html>
+

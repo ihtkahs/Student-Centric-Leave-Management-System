@@ -12,4 +12,6 @@ urlpatterns = [
     path('counsellor/approve/leave', views.counsellor_approve_leave, name='counsellor_approve_leave'),
     path('hod/approve/leave', views.hod_approve_leave, name='hod_approve_leave'),
     path('leave/history', views.leave_history, name='leave_history'),
+    path('leave-history/', views.leave_history, name='leave_history'),
 ]
+

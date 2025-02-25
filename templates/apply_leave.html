@@ -8,6 +8,30 @@
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <script src="{% static 'js/base.js' %}" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <style>
+        #chatbox-container {
+            display: none;
+            width: 50%;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        #chatbox {
+            height: 300px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .user, .bot {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+        .user { background: lightblue; text-align: right; }
+        .bot { background: lightgray; text-align: left; }
+    </style>
 </head>
 <body>
     <div id="wrapper">
@@ -32,6 +56,20 @@
     </div>
 
     <main>
+        <h2>Choose how you want to apply for leave:</h2>
+        <button onclick="toggleChatbot()">Use Chatbot for Leave Request</button>
+
+        <!-- Chatbot Section -->
+        <div id="chatbox-container">
+            <h3>Leave Request Chatbot</h3>
+            <div id="chatbox"></div>
+            <input type="text" id="userInput" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
+        <hr>
+
+        <h3>Manual Leave Application</h3>
         {% if success_message %}
             <div id="successMessage" style="display: none;">{{ success_message }}</div>
         {% endif %}
@@ -118,5 +156,34 @@
             <button type="submit">Submit</button>
         </form>
     </main>
+
+    <script>
+        function toggleChatbot() {
+            var chatbot = document.getElementById("chatbox-container");
+            chatbot.style.display = chatbot.style.display === "none" ? "block" : "none";
+        }
+
+        function sendMessage() {
+            let userText = document.getElementById("userInput").value;
+            if (userText.trim() === "") return;
+
+            document.getElementById("chatbox").innerHTML += `<div class='user'>${userText}</div>`;
+            document.getElementById("userInput").value = "";
+
+            fetch("{% url 'chatbot_response' %}", {
+                method: "POST",
+                headers: { 
+                    "X-CSRFToken": "{{ csrf_token }}", 
+                    "Content-Type": "application/x-www-form-urlencoded" 
+                },
+                body: "message=" + encodeURIComponent(userText)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("chatbox").innerHTML += `<div class='bot'>${data.response}</div>`;
+            });
+        }
+    </script>
 </body>
 </html>
+
