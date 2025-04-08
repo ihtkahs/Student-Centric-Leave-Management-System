@@ -5,12 +5,14 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import LeaveApplicationForm
 from .models import Student, LeaveRequest, Counsellor, LeaveStatus, Event
+from .utils.pdf_generator import generate_leave_pdf
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
 from django.db.models import OuterRef, Subquery
 from datetime import timedelta
 import json
+import os
 
 # Custom login view
 def custom_login(request):
@@ -267,7 +269,18 @@ def hod_approve_leave(request):
 
             student.leave_taken += leave_days
             student.balance_leave -= leave_days
-            student.save()
+            
+
+            # ✅ Save PDF to media/leave_pdfs/
+            pdf_filename = f"leave_{leave_request.id}_{student_name.replace(' ', '_')}.pdf"
+            pdf_path = os.path.join(settings.MEDIA_ROOT, "leave_pdfs", pdf_filename)
+            os.makedirs(os.path.dirname(pdf_path), exist_ok=True)  # ensure directory exists
+            generate_leave_pdf(leave_request, pdf_path)
+            print("after pdf")
+
+            from django.core.files import File
+            with open(pdf_path, 'rb') as f:
+                leave_request.generated_pdf.save(pdf_filename, File(f), save=True)
 
             # Notify student about the HOD's approval
             subject = "Your Leave Request Has Been Approved by the HOD"
@@ -284,6 +297,7 @@ def hod_approve_leave(request):
                 f"Best regards,\nLeave Management System"
             )
             send_mail(subject, message, "ihtkahs251004@gmail.com", [student_email], fail_silently=True)
+            print("after mail sent")
 
             messages.success(request, "Leave request approved successfully.")
 
@@ -335,6 +349,7 @@ def leave_history(request):
         counsellor_comment=Subquery(counsellor_comment),
         hod_comment=Subquery(hod_comment)
     ).order_by('-submitted_at')
+    print(user_leaves[14].latest_status)
 
     context = {
         'user_leaves': user_leaves,

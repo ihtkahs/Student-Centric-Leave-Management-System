@@ -1,15 +1,3 @@
-/*!
- * Evo Calendar - Simple and Modern-looking Event Calendar Plugin
- *
- * Licensed under the MIT License
- *
- * Version: 1.1.2
- * Author: Edlyn Villegas
- * Docs: https://edlynvillegas.github.com/evo-calendar
- * Repo: https://github.com/edlynvillegas/evo-calendar
- * Issues: https://github.com/edlynvillegas/evo-calendar/issues
- *
-*/
 
 *, ::after, ::before {
     -webkit-box-sizing: border-box;
@@ -369,7 +357,7 @@ tr.calendar-body .calendar-day .day[disabled] {
     float: left;
     /* z-index: 0; */
 }
-/* .event-container > .event-icon::before {
+.event-container > .event-icon::before {
     content: '';
     position: absolute;
     top: 0;
@@ -378,8 +366,8 @@ tr.calendar-body .calendar-day .day[disabled] {
     height: calc(100% + 10px);
     background-color: #eaeaea;
     z-index: -1;
-} */
-/* .event-container:last-child > .event-icon::before {
+} 
+.event-container:last-child > .event-icon::before {
     height: calc(50% + 10px);
 }
 .event-container:first-child > .event-icon::before {
@@ -388,7 +376,7 @@ tr.calendar-body .calendar-day .day[disabled] {
 }
 .event-container:only-child > .event-icon::before {
     opacity: 0;
-} */
+}
 .event-container > .event-icon > img {
     width: 30px;
 }

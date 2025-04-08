@@ -81,6 +81,7 @@ class LeaveRequest(models.Model):
     reason = models.TextField()
     proof = models.FileField(upload_to='proofs/', blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
+    generated_pdf = models.FileField(upload_to='leave_pdfs/', null=True, blank=True)
 
     def __str__(self):
         return f"{self.student.name} - {self.leave_type}"

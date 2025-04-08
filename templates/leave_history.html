@@ -40,6 +40,7 @@
                             <th>Proof</th>
                             <th>Status</th>
                             <th>Comments</th>
+                            <th>Download</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -91,6 +92,13 @@
                                         N/A
                                     {% endif %}
                                 </div>
+                            </td>
+                            <td>
+                                {% if leave.latest_status == "approved_by_hod" and leave.generated_pdf %}
+                                    <a href="{{ leave.generated_pdf.url }}" class="btn btn-sm btn-primary" target="_blank">Download PDF</a>
+                                {% else %}
+                                    <span class="text-muted">PDF not available</span>
+                                {% endif %}
                             </td>
                         </tr>
                         {% empty %}
